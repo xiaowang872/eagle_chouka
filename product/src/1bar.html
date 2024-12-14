@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据显示</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-top: 20px;
+    }
+    .data-container {
+      width: 90%;
+      margin: 20px auto;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    table th, table td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    table th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    table tr:hover {
+      background-color: #f1f1f1;
+    }
+    .loading {
+      text-align: center;
+      font-size: 20px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>运动员数据</h1>
+  <div class="loading" id="loading">数据加载中...</div>
+  <div class="data-container" id="dataContainer"></div>
+
+  <script>
+    // 请求后端接口获取 temp.json 数据
+    fetch('http://127.0.0.1:3000/getData')
+      .then(response => response.json())
+      .then(data => {
+        // 获取显示容器和加载提示
+        const dataContainer = document.getElementById('dataContainer');
+        const loading = document.getElementById('loading');
+        
+        // 隐藏加载提示
+        loading.style.display = 'none';
+        
+        // 构建表格
+        let tableHTML = '<table>';
+        tableHTML += '<thead><tr><th>编号</th><th>姓名</th><th>类别</th></tr></thead><tbody>';
+
+        // 遍历数据并生成表格内容
+        for (const key in data) {
+          const category = data[key];
+          category.forEach(item => {
+            tableHTML += `<tr><td>${item[0]}</td><td>${item[1]}</td><td>${item[2]}</td></tr>`;
+          });
+        }
+
+        tableHTML += '</tbody></table>';
+        
+        // 将生成的表格添加到容器中
+        dataContainer.innerHTML = tableHTML;
+      })
+      .catch(error => {
+        const dataContainer = document.getElementById('dataContainer');
+        dataContainer.innerHTML = '<p>加载数据失败，请稍后重试。</p>';
+        console.error('加载数据失败', error);
+      });
+  </script>
+
+</body>
+</html>
