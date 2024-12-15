@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>年会抽奖 - 参赛名单</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background-color: #45a049;
+        }
+
+        .pagination button.disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>年会参赛名单</h1>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>姓名</th>
+                    <th>类别</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 数据将通过JS动态填充 -->
+            </tbody>
+        </table>
+
+        <!-- 分页按钮 -->
+        <div class="pagination">
+            <button id="prevPage" class="disabled">上一页</button>
+            <button id="nextPage">下一页</button>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'http://127.0.0.1:3000/getAllData';
+        const rowsPerPage = 20; // 每页显示20行
+        let currentPage = 1;
+        let data = [];
+
+        // 获取数据并渲染表格
+        function fetchData() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(responseData => {
+                    data = responseData;
+                    renderTable();
+                    updatePagination();
+                })
+                .catch(error => {
+                    console.error('数据加载失败:', error);
+                });
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const pageData = data.slice(startIndex, endIndex);
+
+            const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';  // 清空现有的表格内容
+
+            pageData.forEach(entry => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = entry[0]; // 编号
+                row.insertCell(1).textContent = entry[1]; // 姓名
+                row.insertCell(2).textContent = entry[2]; // 类别
+            });
+        }
+
+        // 更新分页按钮的状态
+        function updatePagination() {
+            const totalPages = Math.ceil(data.length / rowsPerPage);
+
+            // 更新上一页按钮状态
+            document.getElementById('prevPage').classList.toggle('disabled', currentPage === 1);
+
+            // 更新下一页按钮状态
+            document.getElementById('nextPage').classList.toggle('disabled', currentPage === totalPages);
+        }
+
+        // 处理上一页按钮点击事件
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+                updatePagination();
+            }
+        });
+
+        // 处理下一页按钮点击事件
+        document.getElementById('nextPage').addEventListener('click', () => {
+            const totalPages = Math.ceil(data.length / rowsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+                updatePagination();
+            }
+        });
+
+        // 初始加载数据
+        fetchData();
+    </script>
+</body>
+
+</html>

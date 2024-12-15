@@ -50,7 +50,7 @@
           <button id="save" class="fixed-btn">导出抽奖结果</button>
           <button id="reset" class="fixed-btn">重置</button>
           
-          <button id="abc" class="fixed-btn">显示中奖名单</button>
+          <button id="abc" class="fixed-btn">进入后台</button>
 
 
         </div>
@@ -58,13 +58,19 @@
       
     </div>
 
-    <script>
+    <!-- <script>
       // 点击"显示中奖名单"按钮时跳转到 1.html
       document.getElementById('abc').addEventListener('click', function() {
         window.location.href = '1.html';  // 修改为你实际的1.html路径
       });
     </script>
-    
+     -->
+     <script>
+      // 点击"进入后台"按钮时打开一个新的窗口
+      document.getElementById('abc').addEventListener('click', function() {
+        window.open('1.html', '_blank', 'width=800,height=600');  // 新建窗口，设置大小
+      });
+    </script>
 
     <div class="qipao-container"></div>
 

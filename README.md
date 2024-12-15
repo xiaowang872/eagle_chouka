@@ -22,12 +22,8 @@ cd lottery
 cd server
 npm config set registry https://registry.npmmirror.com/
 npm install
-
-# 前端插件安装
 cd ../product
 npm install
-
-# 打包
 set NODE_OPTIONS=--openssl-legacy-provider
 npm run build
 
