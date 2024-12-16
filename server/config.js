@@ -6,6 +6,10 @@
  * text: 奖品标题
  * img: 图片地址
  */
+
+const fs = require('fs');
+const path = require('path');
+
 const prizes = [
   {
     type: 0,
@@ -74,8 +78,28 @@ const EACH_COUNT = [1, 1, 1, 1];
  */
 const COMPANY = "英格科技";
 
+function saveAllDataFile(data) {
+  const filePath = path.join(__dirname, 'prizes.json');
+  data = JSON.stringify(data, null, 2);
+
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filePath, data, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+      console.log('奖品数据已保存');
+    });
+  });
+}
+
+
+
+
 module.exports = {
   prizes,
   EACH_COUNT,
-  COMPANY
+  COMPANY,
+  saveAllDataFile
 };

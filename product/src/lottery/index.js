@@ -299,11 +299,6 @@ function bindEvent() {
 
 
 
-      case "abc":
-        
-      break;
-
-
 
     }
   });

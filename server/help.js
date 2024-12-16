@@ -4,10 +4,12 @@ const xlsx = require("node-xlsx").default;
 const express = require('express');
 const app = express();
 const port = 3000;
-
+const { prizes, EACH_COUNT, COMPANY } = require('./config'); // 引入奖品配置
+const bodyParser = require('body-parser');  // 引入 body-parser
 // 设置缓存目录
 let cwd = path.join(__dirname, "cache");
-
+// 使用 body-parser 中间件来解析 JSON 数据
+app.use(bodyParser.json());  // 解析 POST 请求中的 JSON 数据
 // 设置跨域头部
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');  // 允许所有来源
@@ -46,6 +48,31 @@ app.get('/getAllData', (req, res) => {
     }
     res.json(JSON.parse(data));  // 将 JSON 数据返回给前端
   });
+});
+
+
+// 提供读取奖品数据的接口
+app.get('/getPrizeData', (req, res) => {
+  // 直接读取 config.js 中的奖品数据
+  res.json({ prizes });
+});
+
+// 提供接口更新奖品数量
+app.post('/updatePrizeCount', (req, res) => {
+  const { type, count } = req.body;
+
+  // 查找奖品类型
+  const prize = prizes.find(p => p.type === type);
+  
+  if (prize) {
+    prize.count = count;  // 更新奖品数量
+    // 保存更新后的奖品配置到 config.js 或者文件中
+    saveAllDataFile(prizes)
+      .then(() => res.json({ success: true, prize }))
+      .catch((err) => res.status(500).json({ success: false, message: '更新奖品数量失败' }));
+  } else {
+    res.status(400).json({ success: false, message: '奖品类型不存在' });
+  }
 });
 
 // 启动服务器
@@ -179,6 +206,24 @@ function shuffle(arr) {
     arr[i] = temp;
   }
 }
+function writeXML(data, name) {
+  let buffer = xlsx.build([
+    {
+      name: "抽奖结果",
+      data: data
+    }
+  ]);
+
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path.join(process.cwd(), name), buffer, err => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+}
 function loadXML(xmlPath) {
   let userData = xlsx.parse(xmlPath);
   let outData = [];
@@ -194,6 +239,7 @@ module.exports = {
   loadTempData,
   loadXML,
   shuffle,
+  writeXML,
   saveDataFile,
   saveErrorDataFile,
   convertXlsxToJson

@@ -179,6 +179,24 @@ function shuffle(arr) {
     arr[i] = temp;
   }
 }
+function writeXML(data, name) {
+  let buffer = xlsx.build([
+    {
+      name: "抽奖结果",
+      data: data
+    }
+  ]);
+
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path.join(process.cwd(), name), buffer, err => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+}
 function loadXML(xmlPath) {
   let userData = xlsx.parse(xmlPath);
   let outData = [];
@@ -194,6 +212,7 @@ module.exports = {
   loadTempData,
   loadXML,
   shuffle,
+  writeXML,
   saveDataFile,
   saveErrorDataFile,
   convertXlsxToJson

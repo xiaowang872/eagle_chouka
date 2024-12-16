@@ -27,7 +27,6 @@ npm install
 set NODE_OPTIONS=--openssl-legacy-provider
 npm run build
 
-# 运行
 npm run serve
 
 ```
